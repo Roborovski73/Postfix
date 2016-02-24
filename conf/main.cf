@@ -1,0 +1,38 @@
+###############
+# General
+###############
+
+# The list of relayed networks is still loaded from a configuration file
+mynetworks = 127.0.0.1/32 [::1]/128
+# Empty alias list to override the configuration variable and disable NIS
+alias_maps = hash:/etc/aliases
+# SQLite configuration
+sql = sqlite:${config_directory}/
+# Only accept virtual emails
+mydestination =
+
+###############
+# TLS
+###############
+smtpd_use_tls = yes
+smtpd_tls_cert_file=/certs/cert.pem
+smtpd_tls_key_file=/certs/key.pem
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+###############
+# SASL
+###############
+smtpd_sasl_local_domain = $myhostname
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = inet:imap:2102
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+
+###############
+# Virtual
+###############
+virtual_mailbox_domains = ${sql}sqlite-virtual_mailbox_domains.cf
+virtual_alias_maps = ${sql}sqlite-virtual_alias_maps.cf
+virtual_transport = lmtp:inet:imap:2525
+lmtp_host_lookup = native
